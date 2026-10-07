@@ -1,0 +1,303 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-code);
+  --color-background: var(--bg);
+  --color-foreground: var(--text-primary);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ivory: var(--ivory);
+  --color-mute: var(--text-muted);
+  --color-secondary: var(--text-secondary);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-soft: var(--accent-soft);
+  --color-line: var(--border-color);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-code: "JetBrains Mono", "IBM Plex Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Centralized Theme Progression Tokens (Defaults to light) */
+  --bg: #F3F1EB;
+  --surface: #EAE7DF;
+  --surface-raised: #DFDBD1;
+  --ink: #111111;
+  --ivory: #F3F1EB;
+  --text-primary: #111111;
+  --text-secondary: #55514B;
+  --text-muted: #77716A;
+  --border-color: rgba(0, 0, 0, 0.10);
+
+  /* Primary Orange Brand Identity (deeper for light bg contrast) */
+  --accent: #E85D00;
+  --accent-hover: #D04F00;
+  --accent-deep: #B84400;
+  --accent-soft: rgba(232, 93, 0, 0.10);
+  --accent-border: rgba(232, 93, 0, 0.22);
+  --accent-glow: rgba(232, 93, 0, 0.14);
+  --ring: rgba(232, 93, 0, 0.35);
+
+  /* Background grid */
+  --grid-line: rgba(0, 0, 0, 0.04);
+}
+
+@layer base {
+  * {
+    border-color: var(--border-color);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.15s ease-out, color 0.15s ease-out;
+  }
+
+  body {
+    min-width: 320px;
+    overflow-x: hidden;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    position: relative;
+    transition: background-color 0.15s ease-out, color 0.15s ease-out;
+  }
+
+  ::selection {
+    background: rgba(232, 93, 0, 0.25);
+    color: #111111;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+}
+
+/* Engineering dynamic subtle grid */
+.engineering-grid {
+  background-size: 48px 48px;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+}
+
+/* Subtle noise texture background */
+.grain-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.025'/%3E%3C/svg%3E");
+}
+
+/* Custom transitions and easing */
+.ease-editorial {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Animated dashed lines for engineering pipelines with orange pulse */
+@keyframes flowDash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.animate-flow-dash {
+  animation: flowDash 2s linear infinite;
+}
+
+@keyframes orangePulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 106, 0, 0.5);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 106, 0, 0);
+  }
+}
+
+.animate-orange-pulse {
+  animation: orangePulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3.5s ease-in-out infinite;
+}
+
+/* Masked text reveal helper */
+.mask-reveal-container {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* ──────────────────────────────────────────────
+   Scroll Reveal: initial hidden states
+   Elements start invisible; GSAP sets opacity: 1
+   when they scroll into view.
+   ────────────────────────────────────────────── */
+.sr,
+.sr-child {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* Experience entries also start hidden for per-entry reveals */
+.experience-entry {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.experience-entry .reveal-item {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* Experience section header/title/subtitle start hidden */
+.exp-header,
+.exp-title,
+.exp-subtitle {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* ──────────────────────────────────────────────
+   Project Preview: floating hover effect
+   ────────────────────────────────────────────── */
+.project-image-float {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shadow-project-hover {
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.12)) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.06));
+}
+
+/* Subtle scale on the screenshot image on group hover */
+.group:hover .project-preview-wrapper img {
+  transform: scale(1.015);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-preview-wrapper img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Project preview frame border accent on group hover */
+.group:hover .project-preview-wrapper>div {
+  border-color: var(--accent-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 0 0 1px var(--accent-border);
+}
+
+/* ──────────────────────────────────────────────
+   Selected Work: pinned showcase
+   ────────────────────────────────────────────── */
+@keyframes workIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.work-in {
+  opacity: 0;
+  animation: workIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.work-card {
+  will-change: transform, opacity;
+  transform-origin: 50% 0%;
+}
+
+.work-tilt {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+}
+
+.work-spotlight {
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 140, 60, 0.16),
+      transparent 60%);
+}
+
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--border-color);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ──────────────────────────────────────────────
+   3D Laptop Mockup styles
+   ────────────────────────────────────────────── */
+.laptop-mockup-wrapper {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.laptop-lid {
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.laptop-base-shadow {
+  box-shadow:
+    0 30px 65px -15px rgba(0, 0, 0, 0.5),
+    0 12px 28px -8px rgba(0, 0, 0, 0.3),
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
