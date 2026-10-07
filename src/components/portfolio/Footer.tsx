@@ -44,6 +44,12 @@ export function Footer() {
             >
               Email
             </a>
+            <a
+              href={`tel:${PERSONAL_INFO.phoneRaw}`}
+              className="hover:text-[var(--accent)] transition-colors"
+            >
+              Phone
+            </a>
           </div>
 
           {/* Copyright & Back to Top */}

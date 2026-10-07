@@ -36,6 +36,8 @@ export const PERSONAL_INFO = {
   name: "Nirmal Kumar P R",
   location: "Chennai, India",
   email: "prnirmalramesh04@gmail.com",
+  phone: "+91 77086 19166",
+  phoneRaw: "+917708619166",
   github: "https://github.com/PrNirmal",
   linkedin: "https://www.linkedin.com/in/prnirmal/",
   resumeUrl: "https://drive.google.com/file/d/1PCENAqA9ht4QgQ61kiqDuTeeCiOldX1r/view?usp=sharing",
@@ -107,7 +109,7 @@ export const PROJECTS: ProjectItem[] = [
     description:
       "Analyzes expert interviews against a research guide to surface cross-market insights backed by verified quote citations.",
     screenshot: interviewShot,
-    statusNote: "PROJECT LINK COMING SOON",
+    github: "https://github.com/PrNirmal/Interview_analyser",
   },
   {
     id: "diabetic-retinopathy",
@@ -117,7 +119,7 @@ export const PROJECTS: ProjectItem[] = [
     technologies: ["Python", "TensorFlow", "Swin Transformer", "U-Net"],
     description: "Swin Transformer-based medical image segmentation system.",
     screenshot: "/projects/project-02.jpg",
-    statusNote: "PROJECT LINK COMING SOON",
+    github: "https://github.com/PrNirmal/Diabetic-retinopathy",
   },
 ];
 

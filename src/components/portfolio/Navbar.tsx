@@ -91,10 +91,18 @@ export function Navbar() {
             <span className="relative inline-flex size-2.5 rounded-full bg-[var(--accent)]" />
           </span>
           <div className="flex flex-col">
-            <span className="font-mono text-xs font-bold tracking-[0.2em] text-[var(--text-primary)] transition-colors group-hover:text-[var(--accent)]">
+            <span
+              className={`font-mono text-xs font-bold tracking-[0.2em] transition-colors group-hover:text-[var(--accent)] ${
+                isScrolled ? "text-[var(--text-primary)]" : "text-[#f5f3ee]"
+              }`}
+            >
               NIRMAL KUMAR P R
             </span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)] transition-colors">
+            <span
+              className={`font-mono text-[9px] uppercase tracking-[0.16em] transition-colors ${
+                isScrolled ? "text-[var(--text-muted)]" : "text-[#a8a29e]"
+              }`}
+            >
               JUNIOR AI ENGINEER
             </span>
           </div>
@@ -110,7 +118,9 @@ export function Navbar() {
               className={`font-mono text-[11px] uppercase tracking-[0.2em] transition-colors relative py-1 ${
                 activeSection === link.id
                   ? "text-[var(--accent)] font-semibold"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  : isScrolled
+                  ? "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  : "text-[#a8a29e] hover:text-[#f5f3ee]"
               }`}
             >
               {link.label}
@@ -140,7 +150,11 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="rounded-lg border border-[var(--border-color)] p-2 text-[var(--text-primary)] transition-colors hover:border-[var(--accent)]/50 hover:text-[var(--accent)] md:hidden"
+          className={`rounded-lg p-2 transition-colors md:hidden ${
+            isScrolled
+              ? "border border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)]"
+              : "border border-white/20 text-[#f5f3ee] hover:border-[var(--accent)] hover:text-[var(--accent)] bg-white/5 backdrop-blur-sm"
+          }`}
           aria-expanded={mobileMenuOpen}
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         >
@@ -150,7 +164,13 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="border-b border-[var(--border-color)] bg-[var(--surface)] px-6 py-6 md:hidden">
+        <div
+          className={`border-b px-6 py-6 md:hidden shadow-2xl transition-colors ${
+            isScrolled
+              ? "bg-[var(--surface)]/95 border-[var(--border-color)] backdrop-blur-xl"
+              : "bg-[#121215]/95 border-white/10 text-[#f5f3ee] backdrop-blur-xl"
+          }`}
+        >
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <a
@@ -160,18 +180,20 @@ export function Navbar() {
                 className={`font-mono text-sm tracking-[0.18em] py-2 transition-colors ${
                   activeSection === link.id
                     ? "text-[var(--accent)] font-semibold"
-                    : "text-[var(--text-secondary)] hover:text-[var(--accent)]"
+                    : isScrolled
+                    ? "text-[var(--text-secondary)] hover:text-[var(--accent)]"
+                    : "text-[#cfcac0] hover:text-[#f5f3ee]"
                 }`}
               >
                 {link.label}
               </a>
             ))}
-            <div className="pt-2 border-t border-[var(--border-color)]">
+            <div className={`pt-2 border-t ${isScrolled ? "border-[var(--border-color)]" : "border-white/10"}`}>
               <a
                 href={PERSONAL_INFO.resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--accent)]/40 bg-[var(--accent)]/10 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--accent)]"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--accent)]/40 bg-[var(--accent)]/15 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition-colors"
               >
                 <FileText size={14} />
                 <span>DOWNLOAD RESUME</span>

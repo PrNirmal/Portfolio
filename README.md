@@ -92,6 +92,7 @@ npm run preview
 - **GitHub**: [@PrNirmal](https://github.com/PrNirmal)
 - **LinkedIn**: [Nirmal Kumar P R](https://www.linkedin.com/in/prnirmal/)
 - **Email**: [prnirmalramesh04@gmail.com](mailto:prnirmalramesh04@gmail.com)
+- **Phone**: [+91 77086 19166](tel:+917708619166)
 
 ---
 

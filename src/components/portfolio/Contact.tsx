@@ -1,16 +1,23 @@
 import { useState } from "react";
-import { Mail, Linkedin, Github, Check, Copy, ArrowUpRight } from "lucide-react";
+import { Mail, Linkedin, Github, Check, Copy, ArrowUpRight, Phone } from "lucide-react";
 import { PERSONAL_INFO } from "./portfolioData";
 import { useScrollReveal } from "./useScrollReveal";
 
 export function Contact() {
-  const [copied, setCopied] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedPhone, setCopiedPhone] = useState(false);
   const sectionRef = useScrollReveal();
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(PERSONAL_INFO.email);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2500);
+  };
+
+  const handleCopyPhone = () => {
+    navigator.clipboard.writeText(PERSONAL_INFO.phoneRaw);
+    setCopiedPhone(true);
+    setTimeout(() => setCopiedPhone(false), 2500);
   };
 
   return (
@@ -45,33 +52,65 @@ export function Contact() {
           Open to opportunities in software engineering, AI engineering and AI application development.
         </p>
 
-        {/* Direct Email Action Display */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5" data-sr-stagger="0.1" data-sr="up">
-          <a
-            href={`mailto:${PERSONAL_INFO.email}`}
-            className="sr-child group inline-flex items-center gap-2.5 rounded-xl bg-[var(--accent)] px-7 py-4 font-mono text-xs font-bold uppercase tracking-wider text-white transition-all duration-300 hover:bg-[var(--accent-hover)] hover:shadow-[0_0_28px_rgba(255,106,0,0.5)]"
-          >
-            <Mail size={16} />
-            <span>EMAIL ME</span>
-            <ArrowUpRight
-              size={15}
-              className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-            />
-          </a>
+        {/* Direct Contact Actions Display */}
+        <div className="mt-10 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3.5" data-sr-stagger="0.1" data-sr="up">
+          <div className="sr-child inline-flex items-center rounded-xl border border-[var(--border-color)] bg-[var(--surface)] transition-all duration-200 hover:border-[var(--accent)]/50 hover:bg-[var(--surface-raised)]">
+            <a
+              href={`mailto:${PERSONAL_INFO.email}`}
+              className="group inline-flex items-center gap-2 pl-5 pr-3 py-4 font-mono text-xs text-[var(--text-primary)]"
+              aria-label={`Send email to ${PERSONAL_INFO.email}`}
+            >
+              <Mail size={14} className="text-[var(--accent)]" />
+              <span>{PERSONAL_INFO.email}</span>
+              <ArrowUpRight
+                size={14}
+                className="text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </a>
+            <div className="h-4 w-px bg-[var(--border-color)]" />
+            <button
+              type="button"
+              onClick={handleCopyEmail}
+              className="px-3.5 py-4 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+              title="Copy email address"
+              aria-label="Copy email address"
+            >
+              {copiedEmail ? (
+                <Check size={14} className="text-[var(--accent)]" />
+              ) : (
+                <Copy size={14} />
+              )}
+            </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={handleCopyEmail}
-            className="sr-child inline-flex items-center gap-2 rounded-xl border border-[var(--border-color)] bg-[var(--surface)] px-5 py-4 font-mono text-xs text-[var(--text-primary)] transition-all duration-200 hover:border-[var(--accent)]/50 hover:bg-[var(--surface-raised)] cursor-pointer"
-            aria-label="Copy email address"
-          >
-            {copied ? (
-              <Check size={14} className="text-[var(--accent)]" />
-            ) : (
-              <Copy size={14} className="text-[var(--text-muted)]" />
-            )}
-            <span>{copied ? "COPIED TO CLIPBOARD" : PERSONAL_INFO.email}</span>
-          </button>
+          <div className="sr-child inline-flex items-center rounded-xl border border-[var(--border-color)] bg-[var(--surface)] transition-all duration-200 hover:border-[var(--accent)]/50 hover:bg-[var(--surface-raised)]">
+            <a
+              href={`tel:${PERSONAL_INFO.phoneRaw}`}
+              className="group inline-flex items-center gap-2 pl-5 pr-3 py-4 font-mono text-xs text-[var(--text-primary)]"
+              aria-label={`Call ${PERSONAL_INFO.phone}`}
+            >
+              <Phone size={14} className="text-[var(--accent)]" />
+              <span>{PERSONAL_INFO.phone}</span>
+              <ArrowUpRight
+                size={14}
+                className="text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </a>
+            <div className="h-4 w-px bg-[var(--border-color)]" />
+            <button
+              type="button"
+              onClick={handleCopyPhone}
+              className="px-3.5 py-4 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+              title="Copy phone number"
+              aria-label="Copy phone number"
+            >
+              {copiedPhone ? (
+                <Check size={14} className="text-[var(--accent)]" />
+              ) : (
+                <Copy size={14} />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Social Links Row */}

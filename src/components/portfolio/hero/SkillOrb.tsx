@@ -8,6 +8,7 @@ import {
   type MotionValue,
   type Transition,
 } from "framer-motion";
+import { useIsMobile } from "../../../hooks/use-mobile";
 
 /* =====================================================================
    SkillOrb: Animated neural core (particles, wireframe, distorting sphere)
@@ -136,20 +137,34 @@ const POS: Record<SkillId, Vector3> = Object.fromEntries(
   })
 ) as Record<SkillId, Vector3>;
 
-function CameraFit() {
+/* Scales the whole orbit to the canvas size, reserving room for the
+   label cards so they never leave the canvas. */
+function CameraFit({ isMobile }: { isMobile?: boolean }) {
   const { size, camera } = useThree();
   useEffect(() => {
-    const side = Math.min(size.width, size.height);
-    const labelHalf = side < 480 ? 74 : 98; // half the widest label card, in px
-    const reach = SHELL * 1.1; // shell radius plus perspective growth
-    const pxPerUnit = Math.max((side / 2 - labelHalf - 6) / reach, 24);
+    if (isMobile) {
+      const pxPerUnit = Math.max(size.width / (SHELL * 2.0), 28);
+      const worldH = size.height / pxPerUnit;
+      const fov = (camera as PerspectiveCamera).fov;
+      camera.position.z = Math.max(worldH / 2 / Math.tan(MathUtils.degToRad(fov / 2)), 6.4);
+      camera.position.y = 0.3;
+      camera.updateProjectionMatrix();
+      return;
+    }
+    camera.position.y = 0;
+    const labelHalf = size.width < 480 ? 70 : 88; // half the widest label card, px
+    const byWidth = (size.width / 2 - labelHalf - 4) / (SHELL * 0.98);
+    const byHeight = (size.height / 2 - 8) / (SHELL * 0.88);
+    const pxPerUnit = Math.max(Math.min(byWidth, byHeight), 24);
     const worldH = size.height / pxPerUnit;
     const fov = (camera as PerspectiveCamera).fov;
     camera.position.z = worldH / 2 / Math.tan(MathUtils.degToRad(fov / 2));
     camera.updateProjectionMatrix();
-  }, [size.width, size.height, camera]);
+  }, [size.width, size.height, camera, isMobile]);
   return null;
 }
+
+
 
 /* ---------- Original core: particle sphere, wireframe, distorting sphere ---------- */
 function Core({ glow }: { glow: React.MutableRefObject<any> }) {
@@ -223,9 +238,10 @@ interface NodeProps {
   pick: (id: SkillId) => void;
   hover: (id: SkillId | null) => void;
   reduce?: boolean | null | undefined;
+  isMobile?: boolean;
 }
 
-function Node({ id, idx, st, pick, hover, reduce }: NodeProps) {
+function Node({ id, idx, st, pick, hover, reduce, isMobile }: NodeProps) {
   const d = DATA[id];
   const pos = POS[id];
   const dot = useRef<Mesh>(null);
@@ -254,28 +270,30 @@ function Node({ id, idx, st, pick, hover, reduce }: NodeProps) {
       sel ? 1 + Math.sin(s.clock.elapsedTime * 3) * 0.12 : 1
     );
 
-    // Visibility: card is visible inside viewport; only hidden when out of viewport or swung behind the orb
-    dot.current.getWorldPosition(v);
-    const proj = v.clone();
-    proj.y += 0.35;
-    proj.project(s.camera);
+    if (!isMobile) {
+      // Visibility: card is visible inside viewport; only hidden when out of viewport or swung behind the orb
+      dot.current.getWorldPosition(v);
+      const proj = v.clone();
+      proj.y += 0.35;
+      proj.project(s.camera);
 
-    const isOutOfViewport =
-      proj.x < -1.35 || proj.x > 1.35 || proj.y < -1.35 || proj.y > 1.35;
+      const isOutOfViewport =
+        proj.x < -1.35 || proj.x > 1.35 || proj.y < -1.35 || proj.y > 1.35;
 
-    // When swinging behind the orb (v.z < -0.7), smoothly fade out so it doesn't clip through the central core
-    const rearFade = MathUtils.clamp((v.z + 1.3) / 0.6, 0, 1);
+      // When swinging behind the orb (v.z < -0.7), smoothly fade out so it doesn't clip through the central core
+      const rearFade = MathUtils.clamp((v.z + 1.3) / 0.6, 0, 1);
 
-    if (btn.current) {
-      if (isOutOfViewport) {
-        btn.current.style.opacity = "0";
-        btn.current.style.pointerEvents = "none";
-      } else if (v.z < -0.7) {
-        btn.current.style.opacity = String(rearFade);
-        btn.current.style.pointerEvents = rearFade > 0.4 ? "auto" : "none";
-      } else {
-        btn.current.style.opacity = "1";
-        btn.current.style.pointerEvents = "auto";
+      if (btn.current) {
+        if (isOutOfViewport) {
+          btn.current.style.opacity = "0";
+          btn.current.style.pointerEvents = "none";
+        } else if (v.z < -0.7) {
+          btn.current.style.opacity = String(rearFade);
+          btn.current.style.pointerEvents = rearFade > 0.4 ? "auto" : "none";
+        } else {
+          btn.current.style.opacity = "1";
+          btn.current.style.pointerEvents = "auto";
+        }
       }
     }
 
@@ -326,22 +344,25 @@ function Node({ id, idx, st, pick, hover, reduce }: NodeProps) {
             depthWrite={false}
           />
         </mesh>
-        <Html position={[0, 0.35, 0]} center zIndexRange={[100, 10]}>
-          <button
-            ref={btn}
-            type="button"
-            className={"so-tag" + (sel ? " on" : "")}
-            aria-pressed={sel}
-            onClick={() => pick(id)}
-            onMouseEnter={() => hover(id)}
-            onMouseLeave={() => hover(null)}
-            onFocus={() => hover(id)}
-            onBlur={() => hover(null)}
-          >
-            <b>{d.label}</b>
-            <i>{d.sub}</i>
-          </button>
-        </Html>
+
+        {!isMobile && (
+          <Html position={[0, 0.35, 0]} center zIndexRange={[100, 10]}>
+            <button
+              ref={btn}
+              type="button"
+              className={"so-tag" + (sel ? " on" : "")}
+              aria-pressed={sel}
+              onClick={() => pick(id)}
+              onMouseEnter={() => hover(id)}
+              onMouseLeave={() => hover(null)}
+              onFocus={() => hover(id)}
+              onBlur={() => hover(null)}
+            >
+              <b>{d.label}</b>
+              <i>{d.sub}</i>
+            </button>
+          </Html>
+        )}
       </group>
     </>
   );
@@ -355,9 +376,10 @@ interface SceneProps {
   mx: MotionValue<number>;
   my: MotionValue<number>;
   reduce?: boolean | null | undefined;
+  isMobile?: boolean;
 }
 
-function Scene({ sel, active, pick, hover, mx, my, reduce }: SceneProps) {
+function Scene({ sel, active, pick, hover, mx, my, reduce, isMobile }: SceneProps) {
   const root = useRef<Group>(null);
   const inner = useRef<Group>(null);
   const shell = useRef<Group>(null);
@@ -444,6 +466,7 @@ function Scene({ sel, active, pick, hover, mx, my, reduce }: SceneProps) {
             pick={pick}
             hover={hover}
             reduce={reduce}
+            isMobile={isMobile}
           />
         ))}
       </group>
@@ -459,6 +482,7 @@ export interface SkillOrbProps {
 }
 
 export function SkillOrb({ mx, my, lift, fade }: SkillOrbProps) {
+  const isMobile = useIsMobile();
   const reduce = useReducedMotion();
   const [sel, setSel] = useState<SkillId>("orch");
   const [hov, setHov] = useState<SkillId | null>(null);
@@ -489,6 +513,89 @@ export function SkillOrb({ mx, my, lift, fade }: SkillOrbProps) {
     return s;
   }, [lift, fade]);
 
+  if (isMobile) {
+    return (
+      <motion.div className="so-mobile-wrapper" style={motionStyle}>
+        {/* Expanded 3D Playground with integrated subtle domain dock */}
+        <div className="so-mobile-playground">
+          <div className="so-mobile-canvas-inner">
+            <Canvas
+              camera={{ position: [0, 0.3, 7.2], fov: 46 }}
+              dpr={[1, 2]}
+              style={{ width: "100%", height: "100%", touchAction: "pan-y" }}
+            >
+              <CameraFit isMobile={true} />
+              <Scene
+                sel={sel}
+                active={active}
+                pick={pick}
+                hover={setHov}
+                mx={mx}
+                my={my}
+                reduce={reduce}
+                isMobile={true}
+              />
+            </Canvas>
+          </div>
+
+          {/* Subtle Top Domain Indicator & Tour Controls */}
+          <div className="so-mobile-top-bar">
+            <div className="so-mobile-domain-badge">
+              <span className="so-mobile-badge-dot" />
+              <span>{DATA[active].cat}</span>
+            </div>
+            <button
+              type="button"
+              className={`so-tour ${tour ? "active" : ""}`}
+              onClick={() => setTour(!tour)}
+              aria-label={tour ? "Pause tour" : "Resume tour"}
+            >
+              <span className="so-tour-dot" />
+              <span>{tour ? "Tour" : "Pause"}</span>
+            </button>
+          </div>
+
+          {/* Neat Floating Capability Container inside Playground */}
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease }}
+            className="so-mobile-dock"
+          >
+            <div className="so-dock-content">
+              <div className="so-dock-header">
+                <span className="so-dock-cat">{DATA[active].cat}</span>
+                <span className="so-dock-counter">
+                  0{ORDER.indexOf(active) + 1} / 0{ORDER.length}
+                </span>
+              </div>
+              <div className="so-dock-title-row">
+                <h3 className="so-dock-title">{DATA[active].label}</h3>
+                <span className="so-dock-sub">{DATA[active].sub}</span>
+              </div>
+            </div>
+
+            {/* Subtle Interactive Selector Dots inside the Container */}
+            <div className="so-dock-dots" role="tablist" aria-label="Skills">
+              {ORDER.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={id === active}
+                  aria-label={DATA[id].label}
+                  className={`so-dock-dot ${id === active ? "on" : ""}`}
+                  onClick={() => pick(id)}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div className="so-wrap" style={motionStyle}>
       <motion.div
@@ -502,7 +609,7 @@ export function SkillOrb({ mx, my, lift, fade }: SkillOrbProps) {
           dpr={[1, 2]}
           style={{ width: "100%", height: "100%", overflow: "visible" }}
         >
-          <CameraFit />
+          <CameraFit isMobile={false} />
           <Scene
             sel={sel}
             active={active}
@@ -511,6 +618,7 @@ export function SkillOrb({ mx, my, lift, fade }: SkillOrbProps) {
             mx={mx}
             my={my}
             reduce={reduce}
+            isMobile={false}
           />
         </Canvas>
       </motion.div>

@@ -57,6 +57,7 @@ export const Route = createFileRoute("/")({
           name: PERSONAL_INFO.name,
           jobTitle: PERSONAL_INFO.role,
           email: `mailto:${PERSONAL_INFO.email}`,
+          telephone: PERSONAL_INFO.phoneRaw,
           address: {
             "@type": "PostalAddress",
             addressLocality: "Chennai",
