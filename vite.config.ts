@@ -12,6 +12,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig(({ command }) => {
   const isBuild = command === "build";
 
+  const isVercel = Boolean(process.env.VERCEL || process.env.NITRO_PRESET === "vercel");
+
   return {
     plugins: [
       tailwindcss(),
@@ -22,18 +24,22 @@ export default defineConfig(({ command }) => {
       viteReact(),
       ...(isBuild
         ? [
-            nitro({
-              preset: "cloudflare-module",
-              output: {
-                dir: "dist",
-                serverDir: "dist/server",
-                publicDir: "dist/client",
-              },
-              cloudflare: {
-                nodeCompat: true,
-                deployConfig: true,
-              },
-            }),
+            nitro(
+              isVercel
+                ? { preset: "vercel" }
+                : {
+                    preset: "cloudflare-module",
+                    output: {
+                      dir: "dist",
+                      serverDir: "dist/server",
+                      publicDir: "dist/client",
+                    },
+                    cloudflare: {
+                      nodeCompat: true,
+                      deployConfig: true,
+                    },
+                  }
+            ),
           ]
         : []),
     ],
