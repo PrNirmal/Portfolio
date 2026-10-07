@@ -12,7 +12,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig(({ command }) => {
   const isBuild = command === "build";
 
-  const isVercel = Boolean(process.env.VERCEL || process.env.NITRO_PRESET === "vercel");
+  const isVercel = Boolean(
+    process.env["VERCEL"] || process.env["NITRO_PRESET"] === "vercel"
+  );
 
   return {
     plugins: [

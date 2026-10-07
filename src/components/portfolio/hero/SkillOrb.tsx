@@ -238,7 +238,7 @@ interface NodeProps {
   pick: (id: SkillId) => void;
   hover: (id: SkillId | null) => void;
   reduce?: boolean | null | undefined;
-  isMobile?: boolean;
+  isMobile?: boolean | undefined;
 }
 
 function Node({ id, idx, st, pick, hover, reduce, isMobile }: NodeProps) {
