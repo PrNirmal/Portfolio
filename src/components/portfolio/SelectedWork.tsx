@@ -3,7 +3,7 @@ import {
   useEffect,
   useRef,
   useState,
-  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
 import {
   ExternalLink,
@@ -24,8 +24,9 @@ import { useMediaQuery } from "../../hooks/use-media-query";
 import { useVisible } from "../../hooks/use-visible";
 
 const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v));
+// Keep in sync with the showcase media query in styles.css.
 const showcaseQuery =
-  "(min-width: 1024px) and (min-height: 740px) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
+  "(min-width: 1024px) and (min-height: 600px) and (prefers-reduced-motion: no-preference)";
 
 function projectScrollDistance(track: HTMLElement, stage: HTMLElement) {
   // Reserve one stage height for pinning and another for the Experience cover.
@@ -166,7 +167,9 @@ function DesktopShowcase({
     [N],
   );
 
-  const onMove = (e: ReactMouseEvent<HTMLDivElement>) => {
+  const onMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== "mouse") return;
+
     const r = e.currentTarget.getBoundingClientRect();
     setMouseTilt({
       x: (e.clientX - r.left) / r.width - 0.5,
@@ -194,12 +197,12 @@ function DesktopShowcase({
           }}
         />
 
-        <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col px-6 lg:px-10 pt-24 pb-8 z-10">
+        <div className="work-stage-layout relative mx-auto flex h-full w-full max-w-7xl flex-col px-6 lg:px-10 pt-24 pb-8 z-10">
           {/* ── Giant outlined project number positioned at the RIGHT side ── */}
           <span
             key={`num-${active}`}
             aria-hidden="true"
-            className="work-in pointer-events-none absolute right-4 xl:right-8 bottom-4 select-none font-bold leading-none tracking-[-0.06em] text-[13rem] xl:text-[17rem] text-right"
+            className="work-stage-number work-in pointer-events-none absolute right-4 xl:right-8 bottom-4 select-none font-bold leading-none tracking-[-0.06em] text-[13rem] xl:text-[17rem] text-right"
             style={{
               color: "transparent",
               WebkitTextStroke: "1.5px color-mix(in srgb, var(--text-primary) 16%, transparent)",
@@ -221,11 +224,11 @@ function DesktopShowcase({
           </SectionHeader>
 
           {/* ── Body ─────────────────────────────────── */}
-          <div className="grid min-h-0 flex-1 grid-cols-12 items-center gap-6 xl:gap-10 py-6">
+          <div className="work-stage-project grid min-h-0 flex-1 grid-cols-12 items-center gap-6 xl:gap-10 py-6">
             {/* Left: project index rail */}
             <nav
               aria-label="Projects"
-              className="col-span-1 flex h-full flex-col items-center justify-center gap-3"
+              className="work-stage-rail col-span-1 flex h-full flex-col items-center justify-center gap-3"
             >
               <button
                 id="work-prev"
@@ -256,7 +259,7 @@ function DesktopShowcase({
                   >
                     {p.number}
                   </span>
-                  <span className="relative h-14 w-[2px] overflow-hidden rounded-full bg-[var(--border-color)]">
+                  <span className="work-stage-rail-meter relative h-14 w-[2px] overflow-hidden rounded-full bg-[var(--border-color)]">
                     <span
                       ref={(el) => {
                         tabFillRefs.current[i] = el;
@@ -280,7 +283,10 @@ function DesktopShowcase({
             </nav>
 
             {/* Center-left: animated project details */}
-            <div key={`text-${active}`} className="col-span-4 flex flex-col justify-center pr-4">
+            <div
+              key={`text-${active}`}
+              className="work-stage-details col-span-4 flex min-w-0 flex-col justify-center pr-4"
+            >
               <span
                 className="work-in font-mono text-xs font-bold tracking-[0.22em] text-[var(--accent)]"
                 style={{ animationDelay: "0ms" }}
@@ -326,7 +332,7 @@ function DesktopShowcase({
               </div>
 
               <div
-                className="work-in mt-7 pt-6 border-t border-[var(--border-color)]"
+                className="work-stage-actions work-in mt-7 pt-6 border-t border-[var(--border-color)]"
                 style={{ animationDelay: "290ms" }}
               >
                 <ProjectActions project={project} />
@@ -336,10 +342,10 @@ function DesktopShowcase({
             {/* Right: Realistic 3D Laptop Mockup with scroll-driven opening effect */}
             <div
               className="col-span-7 flex h-full items-center justify-center"
-              onMouseMove={onMove}
-              onMouseLeave={() => setMouseTilt({ x: 0, y: 0 })}
+              onPointerMove={onMove}
+              onPointerLeave={() => setMouseTilt({ x: 0, y: 0 })}
             >
-              <div className="w-full max-w-[880px] pb-10">
+              <div className="work-stage-mockup w-full max-w-[880px] pb-10">
                 <LaptopMockup
                   projects={PROJECTS}
                   activeProjectIndex={active}

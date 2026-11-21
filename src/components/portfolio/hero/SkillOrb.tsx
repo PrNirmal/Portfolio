@@ -38,7 +38,7 @@ export function SkillOrb({ mx, my }: { mx: MotionValue<number>; my: MotionValue<
   const ref = useRef<HTMLDivElement>(null);
   const labels = useRef<Partial<Record<SkillId, HTMLDivElement>>>({});
   const visible = useVisible(ref);
-  const compact = useMediaQuery("(max-width: 1080px), (pointer: coarse)");
+  const compact = useMediaQuery("(width < 1024px), (pointer: coarse)");
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [loaded, setLoaded] = useState(false);
   const [ready, setReady] = useState(false);

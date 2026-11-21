@@ -180,13 +180,13 @@ export function Profile() {
                   01
                 </span>
                 <h2 data-scroll-reveal data-mobile-scroll-reveal="headline">
-                  Hello, I'm Nirmal
+                  <span>Hello, I'm Nirmal Kumar</span>
                   <em data-scroll-rule aria-hidden="true" />
                 </h2>
               </div>
 
               <p className="pf-lead" data-scroll-reveal>
-                I'm Nirmal Kumar P R, a <Hl>Computer Science and Engineering graduate (2025)</Hl>{" "}
+                I'm a <Hl>Computer Science and Engineering graduate (2025)</Hl>{" "}
                 with {experience.wholeYears}+ years of experience as a <Hl>Junior AI Engineer</Hl>.
                 I work on web, backend and mobile application development, backend services, and
                 integrating AI tools to solve real-world problems.
@@ -236,7 +236,7 @@ const css = `
 .pf-wrap{position:relative;max-width:1280px;margin:0 auto;padding:0 24px}
 @media(min-width:1024px){.pf-wrap{padding:0 40px}}
 .pf-rule{height:1px;background:linear-gradient(90deg,var(--accent, #e85d00),var(--border-color, rgba(0,0,0,0.12)) 30%,var(--border-color, rgba(0,0,0,0.12)));transform-origin:left;margin:22px 0 76px}
-.pf-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:72px;align-items:stretch}
+.pf-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(48px,5.625vw,72px);align-items:stretch}
 .pf-left{position:relative;height:100%}
 .pf-left-sticky{position:sticky;top:104px;display:flex;flex-direction:column}
 .pf-hello{position:relative;padding-top:70px}
@@ -244,7 +244,7 @@ const css = `
   color:transparent;-webkit-text-stroke:1.5px rgba(232,93,0,.35);background:linear-gradient(180deg,rgba(232,93,0,.4) 0%,rgba(232,93,0,.08) 70%,transparent 100%);
   -webkit-background-clip:text;background-clip:text;opacity:.6}
 .pf h2{position:relative;margin:0;display:flex;align-items:center;gap:20px;font:700 16px ${mono};letter-spacing:.2em;text-transform:uppercase;color:var(--text-primary, #111)}
-.pf h2 em{flex:0 0 56px;height:1px;background:var(--accent, #e85d00);transform-origin:left}
+.pf h2 em{flex:0 1 56px;height:1px;background:var(--accent, #e85d00);transform-origin:left}
 .pf-lead{margin:32px 0 0;font-size:clamp(18px,1.6vw,22px);line-height:1.65;font-weight:450;letter-spacing:-.01em;color:var(--text-primary, #111)}
 .pf-hl{display:inline;background-image:linear-gradient(rgba(232,93,0,.26),rgba(232,93,0,.26));background-position:0 88%;background-size:100% 40%;background-repeat:no-repeat;box-decoration-break:clone;-webkit-box-decoration-break:clone;font-weight:600;padding:0 2px}
 .pf-copy{margin:24px 0 0;font-size:16px;line-height:1.8;color:var(--text-muted, #77716a)}
@@ -279,7 +279,10 @@ const css = `
 .pf-card:hover .pf-tag{border-color:rgba(232,93,0,.22);background:rgba(255,255,255,.85);color:var(--text-primary, #111)}
 .pf-tag:hover{background:var(--accent, #e85d00);border-color:var(--accent, #e85d00);color:#fff;transform:translateY(-2px);box-shadow:0 4px 12px -2px rgba(232,93,0,.35)}
 @media(max-width:960px){.pf{padding:80px 0}.pf-grid{grid-template-columns:1fr;gap:48px}.pf-left{position:static;height:auto}.pf-left-sticky{position:static}.pf-num{font-size:104px}}
+@media(height < 760px){.pf-left-sticky{position:static}}
 @media(max-width:640px){.pf{padding:68px 0}.pf-wrap{padding:0 18px}.pf-grid{gap:36px}.pf-hello{padding-top:40px}.pf-num{font-size:80px;top:-16px}
+  .pf h2{gap:12px}
+  .pf h2 em{flex-basis:32px}
   .pf-lead{font-size:16.5px;line-height:1.6;margin-top:20px}.pf-copy{font-size:14px;line-height:1.68;margin-top:14px}.pf-stats{margin-top:28px}
   .pf-stats>div{padding-right:20px}.pf-stats>div+div{padding-left:20px}
   .pf-cards{gap:12px}
