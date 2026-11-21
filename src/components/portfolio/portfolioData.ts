@@ -1,5 +1,9 @@
-import documentAnalyserShot from "@/assets/document_analyser.png";
-import interviewShot from "@/assets/interview.png";
+import documentAnalyserShot from "@/assets/document-analyser-1280.jpg";
+import documentAnalyserSmall from "@/assets/document-analyser-640.jpg";
+import interviewShot from "@/assets/interview-1280.jpg";
+import interviewSmall from "@/assets/interview-640.jpg";
+import project02Shot from "@/assets/project-02-1280.jpg";
+import project02Small from "@/assets/project-02-640.jpg";
 
 export interface ProjectItem {
   id: string;
@@ -9,6 +13,7 @@ export interface ProjectItem {
   technologies: string[];
   description: string;
   screenshot: string;
+  screenshotSmall?: string;
   liveDemo?: string;
   github?: string;
   statusNote?: string;
@@ -97,6 +102,7 @@ export const PROJECTS: ProjectItem[] = [
     technologies: ["Python", "FastAPI", "React", "ChromaDB", "LLM API"],
     description: "End-to-end RAG application for document-based question answering.",
     screenshot: documentAnalyserShot,
+    screenshotSmall: documentAnalyserSmall,
     liveDemo: "https://rag-lab-ui.onrender.com/",
     github: "https://github.com/PrNirmal/rag-lab/tree/main/rag-01-document-qa",
   },
@@ -109,6 +115,7 @@ export const PROJECTS: ProjectItem[] = [
     description:
       "Analyzes expert interviews against a research guide to surface cross-market insights backed by verified quote citations.",
     screenshot: interviewShot,
+    screenshotSmall: interviewSmall,
     github: "https://github.com/PrNirmal/Interview_analyser",
   },
   {
@@ -118,7 +125,8 @@ export const PROJECTS: ProjectItem[] = [
     category: "MACHINE LEARNING / COMPUTER VISION",
     technologies: ["Python", "TensorFlow", "Swin Transformer", "U-Net"],
     description: "Swin Transformer-based medical image segmentation system.",
-    screenshot: "/projects/project-02.jpg",
+    screenshot: project02Shot,
+    screenshotSmall: project02Small,
     github: "https://github.com/PrNirmal/Diabetic-retinopathy",
   },
 ];

@@ -60,7 +60,7 @@ export function LaptopMockup({
     >
       {/* ── Chassis (lid + hinge + base + shadow share one box) ── */}
       <div
-        className="relative mx-auto w-full"
+        className="laptop-chassis relative mx-auto w-full"
         style={{
           transformStyle: "preserve-3d",
           transform: `translateY(${(1 - open) * 28}px) scale(${0.95 + open * 0.05})`,
@@ -69,6 +69,7 @@ export function LaptopMockup({
       >
         {/* ── Lid (rotates on hinge) ───────────────────── */}
         <div
+          data-laptop-lid
           className="relative mx-auto w-[86%] origin-bottom"
           style={{
             transform: `rotateX(${effectiveAngle}deg) rotateY(${parallaxY}deg)`,
@@ -122,7 +123,9 @@ export function LaptopMockup({
                   </div>
                   <div className="mx-auto flex min-w-0 max-w-[55%] flex-1 items-center justify-center gap-1.5 rounded-md bg-black/[0.05] px-3 py-[3px]">
                     <Lock size={8} className="shrink-0 text-black/40" />
-                    <span className="truncate font-mono text-[8px] sm:text-[10px] text-black/60">{url}</span>
+                    <span className="truncate font-mono text-[8px] sm:text-[10px] text-black/60">
+                      {url}
+                    </span>
                     <RotateCw size={8} className="ml-auto hidden sm:block shrink-0 text-black/30" />
                   </div>
                   <span className="rounded-full bg-[var(--accent-soft)] px-2 py-[2px] font-mono text-[7px] sm:text-[8px] font-semibold uppercase tracking-wider text-[var(--accent)]">
@@ -132,15 +135,23 @@ export function LaptopMockup({
 
                 {/* Screenshot stack */}
                 <div className="relative min-h-0 flex-1 bg-white">
-                  {displayList.map((p, i) => {
+                  {displayList.map((p) => {
                     const isActive = p.id === currentProject.id;
                     return (
                       <img
                         key={p.id}
                         src={p.screenshot}
                         alt={`${p.title} — screenshot`}
+                        srcSet={
+                          p.screenshotSmall
+                            ? `${p.screenshotSmall} 640w, ${p.screenshot} 1280w`
+                            : undefined
+                        }
+                        sizes="(max-width: 639px) 74vw, (max-width: 1023px) 62vw, 640px"
                         loading="eager"
-                        className={`absolute inset-0 block h-full w-full object-cover object-top transition-[opacity,transform,filter] duration-[900ms] ease-editorial ${
+                        decoding="async"
+                        aria-hidden={!isActive}
+                        className={`absolute inset-0 block h-full w-full object-cover object-top transition-[opacity,scale,filter] duration-[900ms] ease-editorial ${
                           isActive
                             ? "opacity-100 scale-100 blur-0 z-10"
                             : "opacity-0 scale-[1.025] blur-[2px] pointer-events-none z-0"
@@ -164,7 +175,8 @@ export function LaptopMockup({
         <div
           className="relative z-20 mx-auto -mt-[1px] h-[12px] sm:h-[17px] w-full rounded-t-[3px] rounded-b-[14px] sm:rounded-b-[22px]"
           style={{
-            background: "linear-gradient(180deg, #f3f4f6 0%, #d5d7dc 28%, #b3b6bc 70%, #8e9198 100%)",
+            background:
+              "linear-gradient(180deg, #f3f4f6 0%, #d5d7dc 28%, #b3b6bc 70%, #8e9198 100%)",
             boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -2px 3px rgba(0,0,0,0.18)",
           }}
         >
@@ -191,7 +203,8 @@ export function LaptopMockup({
           aria-hidden="true"
           className="pointer-events-none absolute -inset-x-[4%] -bottom-[34px] h-[48px] blur-[18px]"
           style={{
-            background: "radial-gradient(ellipse at center, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.12) 45%, transparent 72%)",
+            background:
+              "radial-gradient(ellipse at center, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.12) 45%, transparent 72%)",
             opacity: 0.35 + open * 0.65,
           }}
         />

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { useMediaQuery } from "../../hooks/use-media-query";
 
 export function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement | null>(null);
@@ -7,22 +8,23 @@ export function CustomCursor() {
   const [cursorText, setCursorText] = useState("");
   const [isHovered, setIsHovered] = useState(false);
   const [isProject, setIsProject] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const enabled = useMediaQuery("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)");
 
   useEffect(() => {
-    // Only enable on desktop with hover capability
-    const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
-    if (!hasFinePointer) return;
-
-    setIsVisible(true);
+    if (!enabled) return;
 
     const cursor = cursorRef.current;
     if (!cursor) return;
 
+    let moved = false;
     const xTo = gsap.quickTo(cursor, "x", { duration: 0.16, ease: "power3" });
     const yTo = gsap.quickTo(cursor, "y", { duration: 0.16, ease: "power3" });
 
     const handleMouseMove = (e: MouseEvent) => {
+      if (!moved) {
+        moved = true;
+        gsap.set(cursor, { x: e.clientX, y: e.clientY, opacity: 1 });
+      }
       xTo(e.clientX);
       yTo(e.clientY);
 
@@ -52,7 +54,7 @@ export function CustomCursor() {
     };
 
     const handleMouseEnter = () => {
-      gsap.to(cursor, { opacity: 1, duration: 0.2 });
+      if (moved) gsap.to(cursor, { opacity: 1, duration: 0.2 });
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -60,19 +62,21 @@ export function CustomCursor() {
     document.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
+      gsap.killTweensOf(cursor);
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
     };
-  }, []);
+  }, [enabled]);
 
-  if (!isVisible) return null;
+  if (!enabled) return null;
 
   return (
     <div
       ref={cursorRef}
       aria-hidden="true"
-      className={`pointer-events-none fixed left-0 top-0 z-[100] -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 ease-out will-change-transform ${
+      style={{ opacity: 0 }}
+      className={`pointer-events-none fixed left-0 top-0 z-[100] -translate-x-1/2 -translate-y-1/2 rounded-full transition-[width,height,background-color,border-color] duration-200 ease-out will-change-transform ${
         isProject
           ? "flex h-16 w-16 items-center justify-center bg-[var(--accent)] text-white font-mono text-[10px] font-bold tracking-wider shadow-lg shadow-[var(--accent)]/30"
           : isHovered

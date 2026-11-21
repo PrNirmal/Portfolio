@@ -8,7 +8,8 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: { queryClient },
-    scrollRestoration: true,
+    // The portfolio uses native same-document anchors and browser scroll restoration.
+    scrollRestoration: false,
     defaultPreloadStaleTime: 0,
   });
 

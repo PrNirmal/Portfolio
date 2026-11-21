@@ -3,106 +3,75 @@ import { Menu, X, ArrowUpRight, FileText } from "lucide-react";
 import { PERSONAL_INFO } from "./portfolioData";
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [elevated, setElevated] = useState(false);
+  const [dark, setDark] = useState(true);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-
-      // Hero section: no nav tab should be highlighted when on hero section
-      const heroEl = document.getElementById("hero");
-      const heroThreshold = heroEl
-        ? heroEl.offsetTop + heroEl.offsetHeight - 180
-        : window.innerHeight * 0.8;
-
-      if (window.scrollY < heroThreshold) {
-        setActiveSection("");
-        return;
-      }
-
-      // Identify active section using getBoundingClientRect
-      const sections = ["work", "experience", "stack", "contact"];
-      let currentSection = "";
-
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 300 && rect.bottom > 180) {
-            currentSection = sectionId;
-            break;
-          }
-        }
-      }
-
-      setActiveSection(currentSection);
+    const sections = Array.from(
+      document.querySelectorAll<HTMLElement>("#main-content > section"),
+    ).reverse();
+    const root = document.documentElement;
+    const anchorOffset = parseFloat(getComputedStyle(root).scrollPaddingTop) || 76;
+    const navSections = new Set(["work", "experience", "stack", "contact"]);
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const boundary = anchorOffset + 1;
+      const current = sections.find((section) => section.getBoundingClientRect().top <= boundary);
+      const id = current?.id ?? "hero";
+      const scrolled = window.scrollY > 20;
+      setElevated(scrolled);
+      setDark(!scrolled || id === "hero" || id === "experience" || id === "stack");
+      setActiveSection(navSections.has(id) ? id : "");
     };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const scheduleUpdate = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    const observer = new ResizeObserver(scheduleUpdate);
+    sections.forEach((section) => observer.observe(section));
+    update();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("pageshow", scheduleUpdate);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("pageshow", scheduleUpdate);
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
   const navLinks = [
-    { label: "WORK", href: "#work", id: "work" },
-    { label: "EXPERIENCE", href: "#experience", id: "experience" },
-    { label: "STACK", href: "#stack", id: "stack" },
-    { label: "CONTACT", href: "#contact", id: "contact" },
+    { label: "WORK", id: "work" },
+    { label: "EXPERIENCE", id: "experience" },
+    { label: "STACK", id: "stack" },
+    { label: "CONTACT", id: "contact" },
   ];
-
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    setMobileMenuOpen(false);
-    if (href === "#top" || href === "#hero") {
-      setActiveSection("");
-      if (typeof window.__lenis?.scrollTo === "function") {
-        window.__lenis.scrollTo(0, { duration: 1.6 });
-      } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-      return;
-    }
-    const target = document.querySelector(href);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-editorial ${
-        isScrolled
-          ? "bg-[var(--bg)]/85 backdrop-blur-md border-b border-[var(--border-color)] py-3.5 shadow-[0_4px_24px_rgba(0,0,0,0.15)]"
-          : "bg-transparent py-5 sm:py-6"
-      }`}
+      className="site-nav fixed top-0 left-0 right-0 z-50"
+      data-nav-elevated={elevated}
+      data-nav-theme={dark ? "dark" : "light"}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-10">
+      <div className="site-nav-row mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-10">
         {/* Brand Logo */}
         <a
           href="#top"
-          onClick={(e) => handleLinkClick(e, "#top")}
-          className="group flex items-center gap-2.5 cursor-pointer"
+          onClick={() => setMobileMenuOpen(false)}
+          className="group flex min-w-0 items-center gap-2.5 cursor-pointer"
           aria-label="Nirmal Kumar P R Home"
         >
-          <span className="relative flex size-2.5">
+          <span className="relative flex size-2.5 shrink-0">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-40" />
             <span className="relative inline-flex size-2.5 rounded-full bg-[var(--accent)]" />
           </span>
           <div className="flex flex-col">
-            <span
-              className={`font-mono text-xs font-bold tracking-[0.2em] transition-colors group-hover:text-[var(--accent)] ${
-                isScrolled ? "text-[var(--text-primary)]" : "text-[#f5f3ee]"
-              }`}
-            >
+            <span className="font-mono text-xs font-bold tracking-[0.2em] text-[var(--text-primary)] transition-colors group-hover:text-[var(--accent)]">
               NIRMAL KUMAR P R
             </span>
-            <span
-              className={`font-mono text-[9px] uppercase tracking-[0.16em] transition-colors ${
-                isScrolled ? "text-[var(--text-muted)]" : "text-[#a8a29e]"
-              }`}
-            >
+            <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)] transition-colors">
               JUNIOR AI ENGINEER
             </span>
           </div>
@@ -113,20 +82,20 @@ export function Navbar() {
           {navLinks.map((link) => (
             <a
               key={link.id}
-              href={link.href}
-              onClick={(e) => handleLinkClick(e, link.href)}
+              href={`#${link.id}`}
+              aria-current={activeSection === link.id ? "location" : undefined}
+              onClick={() => setMobileMenuOpen(false)}
               className={`font-mono text-[11px] uppercase tracking-[0.2em] transition-colors relative py-1 ${
                 activeSection === link.id
                   ? "text-[var(--accent)] font-semibold"
-                  : isScrolled
-                  ? "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  : "text-[#a8a29e] hover:text-[#f5f3ee]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
               {link.label}
-              {activeSection === link.id && (
-                <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[var(--accent)]" />
-              )}
+              <span
+                aria-hidden="true"
+                className={`absolute bottom-0 left-0 right-0 h-[1.5px] origin-left bg-[var(--accent)] transition-transform duration-300 ${activeSection === link.id ? "scale-x-100" : "scale-x-0"}`}
+              />
             </a>
           ))}
 
@@ -150,11 +119,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className={`rounded-lg p-2 transition-colors md:hidden ${
-            isScrolled
-              ? "border border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)]"
-              : "border border-white/20 text-[#f5f3ee] hover:border-[var(--accent)] hover:text-[var(--accent)] bg-white/5 backdrop-blur-sm"
-          }`}
+          className="shrink-0 rounded-lg border border-[var(--border-color)] p-2 text-[var(--text-primary)] transition-colors hover:border-[var(--accent)]/50 hover:text-[var(--accent)] md:hidden"
           aria-expanded={mobileMenuOpen}
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         >
@@ -164,31 +129,24 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div
-          className={`border-b px-6 py-6 md:hidden shadow-2xl transition-colors ${
-            isScrolled
-              ? "bg-[var(--surface)]/95 border-[var(--border-color)] backdrop-blur-xl"
-              : "bg-[#121215]/95 border-white/10 text-[#f5f3ee] backdrop-blur-xl"
-          }`}
-        >
+        <div className="max-h-[calc(100dvh-var(--anchor-offset))] overflow-y-auto border-b border-[var(--border-color)] bg-[var(--surface)] px-6 py-6 shadow-2xl transition-colors md:hidden">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <a
                 key={link.id}
-                href={link.href}
-                onClick={(e) => handleLinkClick(e, link.href)}
+                href={`#${link.id}`}
+                aria-current={activeSection === link.id ? "location" : undefined}
+                onClick={() => setMobileMenuOpen(false)}
                 className={`font-mono text-sm tracking-[0.18em] py-2 transition-colors ${
                   activeSection === link.id
                     ? "text-[var(--accent)] font-semibold"
-                    : isScrolled
-                    ? "text-[var(--text-secondary)] hover:text-[var(--accent)]"
-                    : "text-[#cfcac0] hover:text-[#f5f3ee]"
+                    : "text-[var(--text-secondary)] hover:text-[var(--accent)]"
                 }`}
               >
                 {link.label}
               </a>
             ))}
-            <div className={`pt-2 border-t ${isScrolled ? "border-[var(--border-color)]" : "border-white/10"}`}>
+            <div className="border-t border-[var(--border-color)] pt-2">
               <a
                 href={PERSONAL_INFO.resumeUrl}
                 target="_blank"
