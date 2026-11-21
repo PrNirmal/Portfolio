@@ -129,6 +129,7 @@ export function TechStack() {
 
         <div
           data-scroll-reveal
+          data-mobile-scroll-reveal="headline"
           className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 mb-8 sm:mb-12"
         >
           <div data-scroll-item>
@@ -241,7 +242,7 @@ export function TechStack() {
 
           {/* Mode A: Unique Swipeable Category Deck */}
           {mobileMode === "deck" && (
-            <div data-scroll-depth>
+            <div data-scroll-depth data-mobile-scroll-reveal>
               <div
                 data-scroll-visual
                 onTouchStart={onTouchStart}
@@ -344,7 +345,7 @@ export function TechStack() {
                   {specificCategories.map((cat) => {
                     const items = TECH_STACK.filter((t) => t.category === cat);
                     return (
-                      <div key={`grouped-${cat}`} data-scroll-depth>
+                      <div key={`grouped-${cat}`} data-scroll-depth data-mobile-scroll-reveal>
                         <div
                           data-scroll-visual
                           className="rounded-xl border border-[var(--border-color)] bg-[var(--surface)]/60 p-3"
@@ -371,7 +372,7 @@ export function TechStack() {
                   })}
                 </div>
               ) : (
-                <div data-scroll-depth>
+                <div data-scroll-depth data-mobile-scroll-reveal>
                   <div data-scroll-visual className="grid grid-cols-2 gap-2">
                     {filteredItems.map((item) => (
                       <MobileTechCapsule key={`${item.category}-${item.name}`} item={item} />

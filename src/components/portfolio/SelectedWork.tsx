@@ -438,7 +438,7 @@ function MobileCarousel({
         />
       </div>
 
-      <div data-scroll-depth>
+      <div data-scroll-depth data-mobile-scroll-reveal>
         <div
           data-scroll-visual
           ref={scrollerRef}

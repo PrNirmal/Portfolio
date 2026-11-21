@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { CustomCursor } from "../components/portfolio/CustomCursor";
 import { Navbar } from "../components/portfolio/Navbar";
 import { PortfolioIntro } from "../components/portfolio/PortfolioIntro";
@@ -12,6 +12,7 @@ import { EducationCertifications } from "../components/portfolio/EducationCertif
 import { Contact } from "../components/portfolio/Contact";
 import { Footer } from "../components/portfolio/Footer";
 import { PERSONAL_INFO } from "../components/portfolio/portfolioData";
+import { mobileRevealQuery } from "../components/portfolio/useScrollReveal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,6 +69,22 @@ export const Route = createFileRoute("/")({
 
 function PortfolioPage() {
   const progressRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    const { hash } = window.location;
+    if (!hash || !window.matchMedia(mobileRevealQuery).matches) return;
+
+    const [navigation] = performance.getEntriesByType(
+      "navigation",
+    ) as PerformanceNavigationTiming[];
+    if (navigation && navigation.type !== "navigate") return;
+
+    const section = document.getElementById(hash.slice(1));
+    if (section?.parentElement?.id !== "main-content" || section.id === "hero") return;
+
+    // An initial smooth fragment scroll can be interrupted during hydration.
+    section.scrollIntoView({ behavior: "instant" });
+  }, []);
 
   useEffect(() => {
     let frame = 0;

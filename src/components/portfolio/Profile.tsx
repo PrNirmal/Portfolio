@@ -179,7 +179,7 @@ export function Profile() {
                 <span className="pf-num" data-scroll-visual aria-hidden="true">
                   01
                 </span>
-                <h2 data-scroll-reveal>
+                <h2 data-scroll-reveal data-mobile-scroll-reveal="headline">
                   Hello, I'm Nirmal
                   <em data-scroll-rule aria-hidden="true" />
                 </h2>

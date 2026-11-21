@@ -1,11 +1,15 @@
 import { useLayoutEffect, useRef } from "react";
 import { PERSONAL_INFO } from "./portfolioData";
+import { mobileRevealQuery } from "./useScrollReveal";
 
 const storageKey = "portfolio-intro-seen";
 
 // This also runs inline before first paint, so keep it independent of module state.
-function playIntro(intro: HTMLElement, key: string) {
+function playIntro(intro: HTMLElement, key: string, mobileQuery: string) {
   if (!window.matchMedia("(prefers-reduced-motion: no-preference)").matches) return;
+
+  const { hash } = window.location;
+  if (hash && hash !== "#top" && hash !== "#hero" && window.matchMedia(mobileQuery).matches) return;
 
   try {
     if (window.sessionStorage.getItem(key)) return;
@@ -18,7 +22,7 @@ function playIntro(intro: HTMLElement, key: string) {
   intro.setAttribute("data-playing", "");
 }
 
-const introScript = `(${playIntro.toString()})(document.currentScript.parentElement, ${JSON.stringify(storageKey)});`;
+const introScript = `(${playIntro.toString()})(document.currentScript.parentElement, ${JSON.stringify(storageKey)}, ${JSON.stringify(mobileRevealQuery)});`;
 
 export function PortfolioIntro() {
   const introRef = useRef<HTMLDivElement>(null);
@@ -28,7 +32,7 @@ export function PortfolioIntro() {
     if (!intro) return;
 
     // The inline script runs on a document load. This also covers client navigation.
-    playIntro(intro, storageKey);
+    playIntro(intro, storageKey, mobileRevealQuery);
     const [animation] = intro.getAnimations();
     const finish = () => intro.removeAttribute("data-playing");
     void animation?.finished.then(finish, finish);

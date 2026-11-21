@@ -125,6 +125,7 @@
 }
 
 [data-scroll-reveal]:focus-within,
+[data-mobile-scroll-reveal]:focus-within,
 [data-scroll-item]:focus-within {
   opacity: 1 !important;
   transform: none !important;
